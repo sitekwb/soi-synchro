@@ -36,25 +36,30 @@ int main(){
     mutex.v = 1;
     initQueue_Person(&mutex.q);
     mutex.id = ID_MUTEX;
+    mutex.raise = 0;
 
     userMutex.jump = 1;
     userMutex.v = 1;
     initQueue_Person(&userMutex.q);
     userMutex.id = ID_USERMUTEX;
+    userMutex.raise = 0;
 
     empty.jump = 0;
     empty.v = BUF_NUM_ELEMENTS; //how many places are empty
     initQueue_Person(&empty.q);
     empty.id = ID_EMPTY;
+    empty.raise = 0;
 
     full.jump = 0;
     full.v  = 0;                //how many places are full
     initQueue_Person(&full.q);
     full.id = ID_FULL;
+    full.raise = 0;
 
     finish.jump = 1;
     finish.v = TRUE;
     finish.id = ID_FINISH;
+    finish.raise = 0;
 
     //RUN THREADS
     int retCA = pthread_create( &caThread, NULL, consume, (void *)(caPerson));

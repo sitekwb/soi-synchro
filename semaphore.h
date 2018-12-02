@@ -20,6 +20,7 @@ typedef struct semaphore{
     int v;
     int jump; //overwrites person jump if not 0
     int id;
+    int raise;
     Queue_Person q;
 }semaphore;
 
@@ -43,19 +44,20 @@ void down(semaphore *s, person *p){
 void up(semaphore *s, person *p)
 {
     s->v += s->jump;
-
+    s->raise += s->jump;
     if(!s->jump){//if semaphore didn't overwritten person jump
         s->v += p->jump;
+        s->raise += p->jump;
     }
 
     if(s == &full){
 
     }
-    if(s->v <= 0){
-        person *wokenPerson;
-        if( (wokenPerson = pick_queue_Person(&s->q) ) ){
-            wokenPerson->cantPass[s->id] = FALSE;
-        }
+    person *wokenPerson;
+    if( ( wokenPerson = front_queue_Person(&s->q) ) && (s->jump!=0 || wokenPerson->jump <= s->raise) ){
+        s->raise -= (s->jump==0) ? wokenPerson->jump : s->jump;
+        pick_queue_Person(&s->q);
+        wokenPerson->cantPass[s->id] = FALSE;
     }
 }
 

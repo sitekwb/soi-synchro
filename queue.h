@@ -37,6 +37,12 @@ void initQueue_##TYPE(Queue_##TYPE *Q){             \
     Q->front = 0;                                   \
     Q->rear = -1;                                   \
 }                                                   \
+TYPE front_queue_##TYPE(Queue_##TYPE *Q) {          \
+    if(Q->size==0){                                 \
+        return NULL;                                \
+    }                                               \
+    return Q->elements[Q->front];                   \
+}                                                   \
 TYPE pick_queue_##TYPE(Queue_##TYPE *Q) {           \
     if(Q->size==0){                                 \
         return NULL;                                \
