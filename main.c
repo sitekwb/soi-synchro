@@ -51,15 +51,11 @@ int main(){
     empty.raise = 0;
 
     full.jump = 0;
-    full.v  = 0;                //how many places are full
+    full.v  = -3;                //how many places are full
     initQueue_Person(&full.q);
     full.id = ID_FULL;
-    full.raise = 0;
+    full.raise = -3;
 
-    finish.jump = 1;
-    finish.v = TRUE;
-    finish.id = ID_FINISH;
-    finish.raise = 0;
 
     //RUN THREADS
     int retCA = pthread_create( &caThread, NULL, consume, (void *)(caPerson));

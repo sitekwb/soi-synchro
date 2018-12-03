@@ -10,7 +10,7 @@
 
 #define PERSON_NUMBER           4
 #define BUF_NUM_ELEMENTS        9
-#define SEMAPHORES_NUM          5
+#define SEMAPHORES_NUM          4
 
 #define TRUE                    1
 #define FALSE                   0

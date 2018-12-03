@@ -12,8 +12,7 @@
 #define ID_MUTEX        0
 #define ID_EMPTY        1
 #define ID_FULL         2
-#define ID_FINISH       3
-#define ID_USERMUTEX    4
+#define ID_USERMUTEX    3
 
 
 typedef struct semaphore{
@@ -26,7 +25,7 @@ typedef struct semaphore{
 
 Queue_char buffer;
 
-semaphore mutex, empty, full, finish, userMutex;
+semaphore mutex, empty, full, userMutex;
 
 void down(semaphore *s, person *p){
     s->v -= s->jump;
@@ -64,7 +63,7 @@ void up(semaphore *s, person *p)
 void *consume(person *p) {//eat one letter
     //person *p = (person *)consumer;
     char c[MAX_JUMP];
-    while(finish.v) {
+    while(TRUE) {
         down(&full, p);
         down(&mutex, p);
 
@@ -83,20 +82,19 @@ void *consume(person *p) {//eat one letter
         }
         up(&userMutex, p);
     }
-    return NULL;
 }
 
 void *produce(person *p){
     //person *p = (person *)producer;
     char c[MAX_JUMP], buf[3];
-    while(finish.v) {
+    while(TRUE) {
         down(&userMutex, p);
         //ask user for producing item
         for(int i=0; i < p->jump; ++i) {
             printf("%s: Please, enter letter no. %d to produce: ", p->name, i+1);
             scanf("%2c", buf);
             if(strcmp(buf, "ZZ") == 0){
-                down(&finish, p);
+                exit(EXIT_SUCCESS);
             }
             char tmp = buf[0];
             c[i] = tmp;
@@ -115,7 +113,6 @@ void *produce(person *p){
         up(&mutex, p);
         up(&full, p);
     }
-    return NULL;
 }
 
 
