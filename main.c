@@ -1,17 +1,22 @@
 //
 // Created by Wojciech Sitek on 30/11/2018.
 //
-#include "semaphore.h"
+#include "sem.h"
 #include <pthread.h>
 #include <string.h>
 
+#define PSSHARED                    0
+#define MIN_LETTERS_TO_CONSUME      3
+
 person *caPerson, *cbPerson, *paPerson, *pbPerson;
 
-int main(){
+
+int main(int argc, char **argv){
     setbuf(stdout, 0);
-    initQueue_char(&buffer);
+    initBuf(&buffer);
     pthread_t caThread, cbThread, paThread, pbThread;
 
+    currentLetter = 'a';
 
     //INITIALIZE VAR VALUES
     caPerson = (person *)malloc(sizeof(person));
@@ -32,30 +37,11 @@ int main(){
 
 
     //INIT OF SEMAPHORS
-    mutex.jump = 1;
-    mutex.v = 1;
-    initQueue_Person(&mutex.q);
-    mutex.id = ID_MUTEX;
-    mutex.raise = 0;
-
-    userMutex.jump = 1;
-    userMutex.v = 1;
-    initQueue_Person(&userMutex.q);
-    userMutex.id = ID_USERMUTEX;
-    userMutex.raise = 0;
-
-    empty.jump = 0;
-    empty.v = BUF_NUM_ELEMENTS; //how many places are empty
-    initQueue_Person(&empty.q);
-    empty.id = ID_EMPTY;
-    empty.raise = 0;
-
-    full.jump = 0;
-    full.v  = -3;                //how many places are full
-    initQueue_Person(&full.q);
-    full.id = ID_FULL;
-    full.raise = -3;
-
+    sem_init(&mutex, PSSHARED, 1);
+    sem_init(&userMutex, PSSHARED, 1);
+    sem_init(&empty, PSSHARED, BUF_NUM_ELEMENTS-1);
+    sem_init(&full, PSSHARED, -MIN_LETTERS_TO_CONSUME);
+    sem_init(&consumeStart, PSSHARED, 0);
 
     //RUN THREADS
     int retCA = pthread_create( &caThread, NULL, consume, (void *)(caPerson));
@@ -81,6 +67,22 @@ int main(){
         fprintf(stderr,"Error - pthread_create() return code: %d\n",retPB);
         exit(EXIT_FAILURE);
     }
+
+    unsigned int runtime = (argc>1)?atoi(argv[1]):30;
+
+    sleep(runtime);
+
+    notFinish = FALSE;
+
+    free(caPerson);
+    free(cbPerson);
+    free(paPerson);
+    free(pbPerson);
+
+    sem_destroy(&mutex);
+    sem_destroy(&userMutex);
+    sem_destroy(&empty);
+    sem_destroy(&full);
 
     pthread_join( caThread, NULL);
     pthread_join( cbThread, NULL);
