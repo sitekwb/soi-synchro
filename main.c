@@ -40,8 +40,8 @@ int main(int argc, char **argv){
     sem_init(&mutex, PSSHARED, 1);
     sem_init(&userMutex, PSSHARED, 1);
     sem_init(&empty, PSSHARED, BUF_NUM_ELEMENTS-1);
-    sem_init(&full, PSSHARED, -MIN_LETTERS_TO_CONSUME);
-    sem_init(&consumeStart, PSSHARED, 0);
+    sem_init(&consumeInitMutex, PSSHARED, MIN_LETTERS_TO_CONSUME);
+    sem_init(&full, PSSHARED, 0);
 
     //RUN THREADS
     int retCA = pthread_create( &caThread, NULL, consume, (void *)(caPerson));

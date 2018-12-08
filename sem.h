@@ -13,7 +13,7 @@
 #define PRODUCER_SLEEP  2
 #define MAX_JUMP        3
 
-sem_t mutex, empty, full, userMutex, consumeStart;
+sem_t mutex, empty, full, userMutex, consumeStart, consumeInitMutex;
 
 Buffer buffer;
 
@@ -25,8 +25,8 @@ void *consume(person *p) {//eat one letter
     //person *p = (person *)consumer;
     char c[MAX_JUMP];
 
-    sem_wait(&consumeStart);
-    sem_post(&consumeStart);
+//    sem_wait(&consumeStart);
+//    sem_post(&consumeStart);
 
     while(notFinish) {
 
@@ -87,14 +87,20 @@ void *produce(person *p){
         sem_post(&userMutex);
 
         for(int i=0; i < p->jump; ++i) {
-            sem_post(&full);
             if(notYetConsumed) {
-                int fullValue;
-                sem_getvalue(&full, &fullValue);
-                if (fullValue >= 0) {
-                    sem_post(&consumeStart);
+                //stopping others who want to initialise full
+                sem_wait(&consumeInitMutex);
+            }
+            if(notYetConsumed) {
+                int semValue;
+                sem_getvalue(&consumeInitMutex, &semValue);
+                if (semValue <= 0) {
+                    notYetConsumed = FALSE;
+                    sem_post(&consumeInitMutex);
                 }
-                notYetConsumed = FALSE;
+            }
+            else{
+                sem_post(&full);
             }
         }
     }
