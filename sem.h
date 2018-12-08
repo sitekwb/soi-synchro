@@ -9,9 +9,10 @@
 
 #include "queue.h"
 
-#define CONSUMER_SLEEP  0 
-#define PRODUCER_SLEEP  0 
 #define MAX_JUMP        3
+
+
+int consumer_sleep, producer_sleep;
 
 sem_t mutex, empty, full, userMutex, consumeStart, consumeInitMutex;
 
@@ -30,7 +31,7 @@ void *consume(void *consumer) {//eat one letter
 
     while(notFinish) {
 
-        //sleep(CONSUMER_SLEEP);
+        sleep(consumer_sleep);
 
         for(int i=0; i<p->jump; ++i) {
             sem_wait(&full);
@@ -50,8 +51,9 @@ void *consume(void *consumer) {//eat one letter
         sem_post(&userMutex);
 
         sem_post(&mutex);
-        sem_post(&empty);
-
+        for(int i=0; i < p->jump; ++i) {
+        	sem_post(&empty);
+	}
     }
     return NULL;
 }
@@ -60,7 +62,7 @@ void *produce(void *producer){
     person *p = (person *)producer;
     char c[MAX_JUMP], buf[3];
     while(notFinish) {
-        //sleep(PRODUCER_SLEEP);
+        sleep(producer_sleep);
 
         //initialize produced item
         for(int i=0; i< p->jump; ++i){
@@ -71,7 +73,9 @@ void *produce(void *producer){
         }
 
 
-        sem_wait(&empty);
+        for(int i=0; i < p->jump; ++i) {
+        	sem_wait(&empty);
+	}
         sem_wait(&mutex);
 
         //enter item

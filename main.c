@@ -35,7 +35,10 @@ int main(int argc, char **argv){
     pbPerson->jump = 3;
     strcpy(pbPerson->name, "ProducerB");
 
-
+    if(argc >= 4 ){
+	producer_sleep = atoi(argv[2]);
+	consumer_sleep = atoi(argv[3]);
+    } 	
     //INIT OF SEMAPHORS
     sem_init(&mutex, PSSHARED, 1);
     sem_init(&userMutex, PSSHARED, 1);

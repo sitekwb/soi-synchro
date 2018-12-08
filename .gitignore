@@ -1,3 +1,5 @@
 .idea
 cmake-build-debug
 queue_test*
+prog
+result*
