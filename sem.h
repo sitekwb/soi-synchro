@@ -9,8 +9,8 @@
 
 #include "queue.h"
 
-#define CONSUMER_SLEEP  1
-#define PRODUCER_SLEEP  2
+#define CONSUMER_SLEEP  0 
+#define PRODUCER_SLEEP  0 
 #define MAX_JUMP        3
 
 sem_t mutex, empty, full, userMutex, consumeStart;
@@ -21,8 +21,8 @@ int notFinish = TRUE, notYetConsumed = TRUE;
 
 char currentLetter;
 
-void *consume(person *p) {//eat one letter
-    //person *p = (person *)consumer;
+void *consume(void *consumer) {//eat one letter
+    person *p = (person *)consumer;
     char c[MAX_JUMP];
 
     sem_wait(&consumeStart);
@@ -30,7 +30,7 @@ void *consume(person *p) {//eat one letter
 
     while(notFinish) {
 
-        sleep(CONSUMER_SLEEP);
+        //sleep(CONSUMER_SLEEP);
 
         for(int i=0; i<p->jump; ++i) {
             sem_wait(&full);
@@ -42,23 +42,25 @@ void *consume(person *p) {//eat one letter
             c[i] = pickBuf(&buffer);
         }
 
-        sem_post(&mutex);
-        sem_post(&empty);
-
         sem_wait(&userMutex);
         //eat item
         for(int i=0; i < p->jump; ++i) {
             printf("%s: I ate letter %c!\n", p->name, c[i]);
         }
         sem_post(&userMutex);
+
+        sem_post(&mutex);
+        sem_post(&empty);
+
     }
+    return NULL;
 }
 
-void *produce(person *p){
-    //person *p = (person *)producer;
+void *produce(void *producer){
+    person *p = (person *)producer;
     char c[MAX_JUMP], buf[3];
     while(notFinish) {
-        sleep(PRODUCER_SLEEP);
+        //sleep(PRODUCER_SLEEP);
 
         //initialize produced item
         for(int i=0; i< p->jump; ++i){
@@ -77,14 +79,15 @@ void *produce(person *p){
             addBuf(&buffer, c[i]);
         }
 
-        sem_post(&mutex);
-
         //inform about produced item
         sem_wait(&userMutex);
         for(int i=0; i < p->jump; ++i) {
             printf("%s: Produced letter: %c!\n", p->name, c[i]);
         }
         sem_post(&userMutex);
+
+        sem_post(&mutex);
+
 
         for(int i=0; i < p->jump; ++i) {
             sem_post(&full);
@@ -98,6 +101,7 @@ void *produce(person *p){
             }
         }
     }
+    return NULL;
 }
 
 
