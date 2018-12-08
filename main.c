@@ -68,11 +68,16 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    unsigned int runtime = (argc>1)?atoi(argv[1]):30;
+    pthread_join( caThread, NULL);
+    pthread_join( cbThread, NULL);
+    pthread_join( paThread, NULL);
+    pthread_join( pbThread, NULL);
 
-    sleep(runtime);
+    //unsigned int runtime = (argc>1)?atoi(argv[1]):30;
 
-    notFinish = FALSE;
+    //sleep(runtime);
+
+    //notFinish = FALSE;
 
     free(caPerson);
     free(cbPerson);
