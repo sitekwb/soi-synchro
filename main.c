@@ -68,16 +68,11 @@ int main(int argc, char **argv){
         exit(EXIT_FAILURE);
     }
 
-    pthread_join( caThread, NULL);
-    pthread_join( cbThread, NULL);
-    pthread_join( paThread, NULL);
-    pthread_join( pbThread, NULL);
+    unsigned int runtime = (argc>1)?atoi(argv[1]):30;
 
-    //unsigned int runtime = (argc>1)?atoi(argv[1]):30;
+    sleep(runtime);
 
-    //sleep(runtime);
-
-    //notFinish = FALSE;
+    notFinish = FALSE;
 
     free(caPerson);
     free(cbPerson);
@@ -89,10 +84,10 @@ int main(int argc, char **argv){
     sem_destroy(&empty);
     sem_destroy(&full);
 
+    exit(EXIT_SUCCESS);
     pthread_join( caThread, NULL);
     pthread_join( cbThread, NULL);
     pthread_join( paThread, NULL);
     pthread_join( pbThread, NULL);
 
-    exit(EXIT_SUCCESS);
 }
