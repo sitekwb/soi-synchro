@@ -19,7 +19,7 @@ Project implements consumer-producer problem in C language using threads from <p
 ```
 $ make
 ```
-2. How to execute program:
+4. How to execute program:
 ```
 $ ./prog [*time-of-work*] [*producer-sleep-time*] [*consumer-sleep-time*] [>*output/file/path*]
 ```
