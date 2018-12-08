@@ -15,11 +15,11 @@ Project implements consumer-producer problem in C language using threads from <p
 		- counting semaphore *full* (indicating how many places are full and ready to be consumed)
 	- four additional threads imitating four people - 2 consumers and 2 producers and one main thread which finishes program running after time indicated by user in program arguments.
  
-1. Instruction:
+3. How to compile:
 ```
 $ make
 ```
-2. Execute program:
+2. How to execute program:
 ```
 $ ./prog [*time-of-work*] [*producer-sleep-time*] [*consumer-sleep-time*] [>*output/file/path*]
 ```
