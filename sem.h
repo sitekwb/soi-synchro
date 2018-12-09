@@ -26,8 +26,6 @@ void *consume(void *consumer) {//eat one letter
     person *p = (person *)consumer;
     char c[MAX_JUMP];
 
-//    sem_wait(&consumeStart);
-//    sem_post(&consumeStart);
 
     while(notFinish) {
 
