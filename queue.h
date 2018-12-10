@@ -33,6 +33,7 @@ void initBuf(Buffer *Q){
     Q->capacity = BUF_NUM_ELEMENTS;
     Q->front = 0;
     Q->rear = -1;
+    Q->elements[0] = 0;
 }
 char pickBuf(Buffer *Q) {
     if(Q->size==0){
@@ -57,4 +58,17 @@ void addBuf(Buffer *Q,char element){
     }
     Q->elements[Q->rear] = element;
 }
+void printBuf(Buffer *Q, char *str){
+	int b=Q->front;
+	int i;
+	for(i=0;i<Q->size; ++i){
+		str[i] = Q->elements[b];
+		++b;
+		if(b == Q->capacity){
+			b=0;
+		}
+	}
+	str[i] = '\0';
+}
+
 #endif //T3_QUEUE_H

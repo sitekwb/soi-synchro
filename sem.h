@@ -24,7 +24,7 @@ char currentLetter;
 
 void *consume(void *consumer) {//eat one letter
     person *p = (person *)consumer;
-    char c[MAX_JUMP];
+    char c[MAX_JUMP], elem[BUF_NUM_ELEMENTS];
 
 //    sem_wait(&consumeStart);
 //    sem_post(&consumeStart);
@@ -45,9 +45,11 @@ void *consume(void *consumer) {//eat one letter
 
         sem_wait(&userMutex);
         //eat item
+	printBuf(&buffer, elem);
         for(int i=0; i < p->jump; ++i) {
-            printf("%s: I ate letter %c!\n", p->name, c[i]);
+            printf("%s: I ate letter: %c! Buffer: %s\n", p->name, c[i], elem);
         }
+	fflush(stdout);
         sem_post(&userMutex);
 
         sem_post(&mutex);
@@ -60,7 +62,7 @@ void *consume(void *consumer) {//eat one letter
 
 void *produce(void *producer){
     person *p = (person *)producer;
-    char c[MAX_JUMP], buf[3];
+    char c[MAX_JUMP], buf[3], elem[BUF_NUM_ELEMENTS];
     while(notFinish) {
         sleep(producer_sleep);
 
@@ -85,9 +87,11 @@ void *produce(void *producer){
 
         //inform about produced item
         sem_wait(&userMutex);
+	printBuf(&buffer, elem);
         for(int i=0; i < p->jump; ++i) {
-            printf("%s: Produced letter: %c!\n", p->name, c[i]);
+            printf("%s: Produced letter: %c! Buffer: %s\n", p->name, c[i], elem);
         }
+	fflush(stdout);
         sem_post(&userMutex);
 
         sem_post(&mutex);
