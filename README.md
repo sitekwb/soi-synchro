@@ -23,7 +23,7 @@ $ make
 ```
 $ ./prog [time-of-work] [producer-sleep-time] [consumer-sleep-time] [>output/file/path]
 ```
-If *time-of-work* is not specified, program will work for 30 seconds. But if sleep-times will not be specified, producer and consumer will work instantly.
+If *time-of-work* is not specified, program will work for 30 seconds. But if sleep-times is not be specified, producer and consumer will work instantly.
 
 
 
