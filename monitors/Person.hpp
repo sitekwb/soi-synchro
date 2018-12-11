@@ -6,8 +6,10 @@
 #ifndef MONITORS_PERSON_H
 #define MONITORS_PERSON_H
 
+Buffer *buffer;
+Monitor *mutex, *userMutex, *empty, *consumeInitMutex, *full;
+
 virtual class Person{
-    static char currentLetter;
 public:
     Person(int jump_, std::string name_) : jump(jump_), name(name_), currentLetter('a'){}
     int getJump(){
@@ -23,6 +25,7 @@ private:
 };
 
 class Consumer : public Person{
+    static char currentLetter;
 public:
     void action(){
         //consume
@@ -31,9 +34,10 @@ public:
 
         while(notFinish) {
 
-            sleep(consumer_sleep);
+            sleep(sleep);
 
             for(int i=0; i<p->jump; ++i) {
+                full->
                 sem_wait(&full);
             }
             sem_wait(&mutex);
@@ -64,8 +68,8 @@ public:
     void action(){
         //produce
         char c[MAX_JUMP], buf[3];
-        while(notFinish) {
-            sleep(producer_sleep);
+        while(true) {
+            sleep(sleep);
 
             //initialize produced item
             for(int i=0; i< p->jump; ++i){
