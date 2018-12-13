@@ -16,7 +16,6 @@
 
 
 class Buffer : public Monitor{
-    static const int capacity = 9;
 public:
 
     char pick() { //throws runtime_error
@@ -46,7 +45,14 @@ public:
         }
         return str;
     }
+    int getCapacity() const{
+        return capacity;
+    }
+    char getBack(){
+        return buf.back();
+    }
 private:
+    static const int capacity = BUF_NUM_ELEMENTS;
     std::queue<char>buf;
 };
 

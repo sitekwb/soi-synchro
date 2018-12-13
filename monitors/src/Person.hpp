@@ -11,24 +11,43 @@
 #include "Buffer.hpp"
 
 #define BUFFERS_NUM             1
-#define MONITORS_NUM            1
 #define CONDITIONS_NUM          2
-#define MAX_JUMP                3
+#define MIN_LETTERS_TO_CONSUME  3
 
 using namespace std;
 
 Buffer *buffer;
 Buffer &buf = *buffer;
-Monitor *userMutex;
 Condition *empty, *full;
+
+
+struct Letter{
+    char c;
+    char operator++(){
+        c = (c=='z')?'a':(c+1);
+        return c;
+    }
+    char operator++(int){
+        char tmp = c;
+        operator++();
+        return tmp;
+    }
+    char operator*(){
+        return c;
+    }
+    void operator=(char nLetter){
+        c = nLetter;
+    }
+};
+
+
+
 
 class Person{
 public:
     Person(const int &jump_, char functionName_, char letterName_)
-    : jump(jump_), functionName(functionName_), letterName(letterName_)
-    {
-        currentLetter = 'a';
-    }
+    : jump(jump_), functionName(functionName_), letterName(letterName_) {}
+
     int getJump(){
         return jump;
     }
@@ -41,7 +60,6 @@ public:
     virtual void action() = 0;
 
 protected:
-    static char currentLetter;
     int jump;
     char functionName, letterName;
 };
@@ -54,20 +72,31 @@ public:
 
     void action(){
         //consume
-        bool finish;
-        while(finish){
+        while(true){
+            sleep(sleepTime);
             //enter to monitor Buffer
             buf.enter();
             //if too low number of elements => wait on full
-            for(int i=0; i < this->jump+3; ++i) {
+            for(int i=0; i < this->jump+MIN_LETTERS_TO_CONSUME; ++i) {
                 if (buf.getSize() == i) {
+                    std::cout<<functionName<<letterName<< \
+                    " waiting for "<<jump+MIN_LETTERS_TO_CONSUME-i<<" places"<<std::endl;
                     buf.wait(*full);
                 }
             }
             //pick&inform user
-            for(int i=0; i< this->jump; ++i){
+            for(int i=1; i <= this->jump; ++i){
                 char c = buf.pick();
-
+                std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' ' \
+                    <<c<<' '<<buf.getSize()<<' '<<buf.getBuf()<<std::endl;
+            }
+            //signal(empty) = Hello! I emptied a few places!
+            if( buf.getSize() + jump == buf.getCapacity() ){
+                buf.leave();
+                buf.signal(*empty);
+            }
+            else{
+                buf.leave();
             }
         }
 
@@ -77,64 +106,43 @@ public:
 
 class Producer : public Person{
 public:
-    Producer(const int &&jump_, char &&letterName_)
-        : Person(jump_, '+', letterName_){}
+    Producer(const int &&jump_, char &&letterName_) : Person(jump_, '+', letterName_){
+        currentLetter = 'a';
+    }
 
     void action(){
         //produce
-        char c[MAX_JUMP], buf[3];
-        bool finish;
-        while(finish) {
+        while(true){
             sleep(sleepTime);
-
-            //initialize produced item
-            for(int i=0; i< p->jump; ++i){
-                c[i] = currentLetter;
-                if(currentLetter++ == 'z'){
-                    currentLetter = 'a';
+            //enter to monitor Buffer
+            buf.enter();
+            //if too much elements => wait till is more EMPTY
+            for(int i=0; i < this->jump; ++i) {
+                if (buf.getSize() == buf.getCapacity() - i) {
+                    // I'll be waiting <= inform user
+                    std::cout<<functionName<<letterName<<" waiting for "<<jump-i<<" places"<<std::endl;
+                    //wait
+                    buf.wait(*empty);
                 }
             }
-
-
-            for(int i=0; i < p->jump; ++i) {
-                sem_wait(&empty);
+            //add&inform user
+            for(int i=1; i <= this->jump; ++i){
+                buf.add(currentLetter++);
+                std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' '  \
+                    <<buf.getBack()<<' '<<buf.getSize()<<' '<<buf.getBuf()<<std::endl;
             }
-            sem_wait(&mutex);
-
-            //enter item
-            for(int i=0; i < p->jump; ++i) {
-                addBuf(&buffer, c[i]);
+            //signal(empty) = Hello! I emptied a few places, before there wasn't any!
+            if( buf.getSize() + jump == buf.getCapacity() ){
+                buf.leave();
+                buf.signal(*empty);
             }
-
-            //inform about produced item
-            sem_wait(&userMutex);
-            for(int i=0; i < p->jump; ++i) {
-                printf("%s: Produced letter: %c!\n", p->name, c[i]);
-            }
-            sem_post(&userMutex);
-
-            sem_post(&mutex);
-
-
-            for(int i=0; i < p->jump; ++i) {
-                if(notYetConsumed) {
-                    //stopping others who want to initialise full
-                    sem_wait(&consumeInitMutex);
-                }
-                if(notYetConsumed) {
-                    int semValue;
-                    sem_getvalue(&consumeInitMutex, &semValue);
-                    if (semValue <= 0) {
-                        notYetConsumed = FALSE;
-                        sem_post(&consumeInitMutex);
-                    }
-                }
-                else{
-                    sem_post(&full);
-                }
+            else{
+                buf.leave();
             }
         }
     }
     static int sleepTime;
+private:
+    static Letter currentLetter;
 };
 #endif //MONITORS_PERSON_H

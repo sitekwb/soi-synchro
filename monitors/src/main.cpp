@@ -33,10 +33,9 @@ int main (int argc, char **argv)
         //shared_memory_object segment(create_only, "Memory", read_write);
 
         managed_shared_memory segment(create_only, "Memory",
-            BUFFERS_NUM*sizeof(Buffer) + MONITORS_NUM*sizeof(Monitor) + CONDITIONS_NUM*sizeof(Condition));
+            BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition));
 
         buffer = segment.construct<Buffer>("Buf")();
-        userMutex = segment.construct<Monitor>("userMutex")();
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
 
