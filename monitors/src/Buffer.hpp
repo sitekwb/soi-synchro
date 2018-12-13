@@ -5,23 +5,24 @@
 #ifndef T3_BUFFER_HPP
 #define T3_BUFFER_HPP
 
+#include "Monitor.hpp"
+
 #include <iostream>
 #include <stdexcept>
 
-#define PERSON_NUMBER           4
 #define BUF_NUM_ELEMENTS        9
 
 
 
-class Buffer{
+class Buffer : public Monitor{
 
 public:
 
     Buffer() : size(0), capacity(BUF_NUM_ELEMENTS), front(0), rear(-1) {}
 
-    char pick() {
+    char pick() { //throws runtime_error
         if(size==0){
-            return NULL;
+            throw std::runtime_error("");
         }
         --size;
         char p = elements[front++];
@@ -40,6 +41,16 @@ public:
             rear = 0;
         }
         elements[rear] = element;
+    }
+    int getSize(){
+        return size;
+    }
+    std::string getBuf(){
+        std::string buf;
+        int p = front;
+        if(front < rear){
+            
+        }
     }
 private:
     int capacity;

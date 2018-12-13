@@ -6,70 +6,86 @@
 #ifndef MONITORS_PERSON_H
 #define MONITORS_PERSON_H
 
-Buffer *buffer;
-Monitor *mutex, *userMutex, *empty, *consumeInitMutex, *full;
+#include <string>
 
-virtual class Person{
+#include "Buffer.hpp"
+
+#define BUFFERS_NUM             1
+#define MONITORS_NUM            1
+#define CONDITIONS_NUM          2
+#define MAX_JUMP                3
+
+using namespace std;
+
+Buffer *buffer;
+Buffer &buf = *buffer;
+Monitor *userMutex;
+Condition *empty, *full;
+
+class Person{
 public:
-    Person(int jump_, std::string name_) : jump(jump_), name(name_), currentLetter('a'){}
+    Person(const int &jump_, char functionName_, char letterName_)
+    : jump(jump_), functionName(functionName_), letterName(letterName_)
+    {
+        currentLetter = 'a';
+    }
     int getJump(){
         return jump;
     }
-    string getName(){
-        return name;
+    char getFunction(){
+        return functionName;
+    }
+    char getLetterName(){
+        return letterName;
     }
     virtual void action() = 0;
-private:
+
+protected:
+    static char currentLetter;
     int jump;
-    string name;
+    char functionName, letterName;
 };
 
 class Consumer : public Person{
-    static char currentLetter;
+
 public:
+    Consumer(const int &&jump_, char &&letterName_)
+            : Person(jump_, '-', letterName_){}
+
     void action(){
         //consume
-        char c[MAX_JUMP];
-
-
-        while(notFinish) {
-
-            sleep(sleep);
-
-            for(int i=0; i<p->jump; ++i) {
-                full->
-                sem_wait(&full);
+        bool finish;
+        while(finish){
+            //enter to monitor Buffer
+            buf.enter();
+            //if too low number of elements => wait on full
+            for(int i=0; i < this->jump+3; ++i) {
+                if (buf.getSize() == i) {
+                    buf.wait(*full);
+                }
             }
-            sem_wait(&mutex);
+            //pick&inform user
+            for(int i=0; i< this->jump; ++i){
+                char c = buf.pick();
 
-            //remove item
-            for(int i=0; i < p->jump; ++i) {
-                c[i] = pickBuf(&buffer);
-            }
-
-            sem_wait(&userMutex);
-            //eat item
-            for(int i=0; i < p->jump; ++i) {
-                printf("%s: I ate letter %c!\n", p->name, c[i]);
-            }
-            sem_post(&userMutex);
-
-            sem_post(&mutex);
-            for(int i=0; i < p->jump; ++i) {
-                sem_post(&empty);
             }
         }
+
     }
-    static int sleep;
+    static int sleepTime;
 };
 
 class Producer : public Person{
 public:
+    Producer(const int &&jump_, char &&letterName_)
+        : Person(jump_, '+', letterName_){}
+
     void action(){
         //produce
         char c[MAX_JUMP], buf[3];
-        while(true) {
-            sleep(sleep);
+        bool finish;
+        while(finish) {
+            sleep(sleepTime);
 
             //initialize produced item
             for(int i=0; i< p->jump; ++i){
@@ -119,6 +135,6 @@ public:
             }
         }
     }
-    static int sleep;
+    static int sleepTime;
 };
 #endif //MONITORS_PERSON_H

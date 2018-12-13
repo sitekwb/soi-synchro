@@ -4,6 +4,7 @@
 
 //boost shared memory
 #include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/shared_memory_object.hpp>
 
 //fork
 #include <sys/types.h>
@@ -12,36 +13,36 @@
 #include <signal.h>
 
 //classes
-#include <Monitor.hpp>
-#include <Buffer.hpp>
-#include <Person.hpp>
+#include "Person.hpp"
 
-int main ()
+
+int main (int argc, char **argv)
 {
     int pid[4];
     Person *person[4];
-    person[0] = new Consumer(1, "ConsumerA");
-    person[1] = new Consumer(2, "ConsumerB");
-    person[2] = new Producer(1, "ProducerA");
-    person[3] = new Producer(3, "ProducerB");
+    person[0] = new Consumer(1, 'A');
+    person[1] = new Consumer(2, 'B');
+    person[2] = new Producer(1, 'A');
+    person[3] = new Producer(3, 'B');
 
     using namespace boost::interprocess;
 
-    shared_memory_object::remove("Memory");
+    shared_memory_object::remove("MySharedMemory");
     try{
         //allocate memory and buffer and monitors objects
-        managed_shared_memory segment (create_only, "Memory", sizeof(Buffer) + MONITORS_NUM*sizeof(Monitor) );
+        //shared_memory_object segment(create_only, "Memory", read_write);
 
-        Buffer *buffer = segment.construct<Buffer>("Buf")();
-        Monitor *mutex = segment.construct<Monitor>("Mutex")(1);
-        Monitor *userMutex = segment.construct<Monitor>("Mutex")(1);
-        Monitor *empty = segment.construct<Monitor>("Mutex")(BUF_NUM_ELEMENTS-1);
-        Monitor *consumeInitMutex = segment.construct<Monitor>("Mutex")(MIN_LETTERS_TO_CONSUME);
-        Monitor *full = segment.construct<Monitor>("Mutex")(0);
+        managed_shared_memory segment(create_only, "Memory",
+            BUFFERS_NUM*sizeof(Buffer) + MONITORS_NUM*sizeof(Monitor) + CONDITIONS_NUM*sizeof(Condition));
+
+        buffer = segment.construct<Buffer>("Buf")();
+        userMutex = segment.construct<Monitor>("userMutex")();
+        empty = segment.construct<Condition>("empty")();
+        full = segment.construct<Condition>("full")();
 
         //initialize time to sleep before each action
-        Consumer::sleep = (argc==4)?atoi(argv[2]):0;
-        Producer::sleep = (argc==4)?atoi(argv[3]):0;
+        Consumer::sleepTime = (argc==4)?atoi(argv[2]):0;
+        Producer::sleepTime = (argc==4)?atoi(argv[3]):0;
 
         //create child processes performing their actions
         for(int i=0; i<4; ++i){
