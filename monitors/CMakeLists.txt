@@ -4,6 +4,6 @@ project(monitors)
 set(CMAKE_CXX_STANDARD 14)
 
 file(GLOB SOURCES "src/*")
-set(CMAKE_CXX_FLAGS "-I/usr/local/include")
+set(CMAKE_CXX_FLAGS "-I/usr/local/include -I../include -std=c++11")
 
 add_executable(monitor ${SOURCES})
