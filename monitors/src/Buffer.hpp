@@ -9,55 +9,45 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <queue>
 
 #define BUF_NUM_ELEMENTS        9
 
 
 
 class Buffer : public Monitor{
-
+    static const int capacity = 9;
 public:
 
-    Buffer() : size(0), capacity(BUF_NUM_ELEMENTS), front(0), rear(-1) {}
-
     char pick() { //throws runtime_error
-        if(size==0){
-            throw std::runtime_error("");
+        if(buf.empty()){
+            throw std::runtime_error("Empty queue");
         }
-        --size;
-        char p = elements[front++];
-        if(front==capacity){
-            front=0;
-        }
-        return p;
+        char c = buf.front();
+        buf.pop();
+        return c;
     }
     void add(char element){ //throws runttime_error
-        if(size == capacity){
-            throw std::runtime_error("Full buffer!");
+        if(buf.size() == capacity){
+            throw std::runtime_error("Full queue");
         }
-        ++size;
-        ++rear;
-        if(rear == capacity){
-            rear = 0;
-        }
-        elements[rear] = element;
+        buf.push(element);
     }
     int getSize(){
-        return size;
+        return buf.size();
     }
     std::string getBuf(){
-        std::string buf;
-        int p = front;
-        if(front < rear){
-            
+        std::string str;
+        while( str.size() != buf.size() ){
+            char c = buf.front();
+            buf.pop();
+            buf.push(c);
+            str+=c;
         }
+        return str;
     }
 private:
-    int capacity;
-    int size;
-    int front;
-    int rear;
-    char elements[BUF_NUM_ELEMENTS];
+    std::queue<char>buf;
 };
 
 #endif //T3_BUFFER_HPP
