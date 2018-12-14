@@ -13,8 +13,11 @@
 #include <signal.h>
 
 //classes
-#include "../include/Person.hpp"
+#include "Producer.hpp"
+#include "Consumer.hpp"
 
+extern Condition *full, *empty;
+extern Buffer *buffer;
 
 int main (int argc, char **argv)
 {
