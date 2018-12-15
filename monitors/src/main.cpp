@@ -35,8 +35,7 @@ int main (int argc, char **argv)
         //allocate memory and buffer and monitors objects
         //shared_memory_object segment(create_only, "Memory", read_write);
 
-        managed_shared_memory segment(create_only, "Memory",
-            BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition));
+        managed_shared_memory segment(open_or_create, "Memory", BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition));
 
         buffer = segment.construct<Buffer>("Buf")();
         empty = segment.construct<Condition>("empty")();
@@ -56,6 +55,9 @@ int main (int argc, char **argv)
     catch(const std::runtime_error& re)
     {
         std::cout << "Runtime error: " << re.what() << std::endl;
+    }
+    catch(const interprocess_exception& ie){
+        std::cout << "Interprocess exception: " << ie.what() << std::endl;
     }
     catch(...){
         std::cout << "Unknown error! Exiting." << std::endl;
