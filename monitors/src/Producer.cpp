@@ -37,13 +37,10 @@ void Producer::action(){
             std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' '  \
                 <<buffer->getBack()<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
+        buffer->leave();
         //signal(empty) = Hello! I emptied a few places, before there wasn't any!
         if( buffer->getSize() + jump == buffer->getCapacity() ){
-            buffer->leave();
             buffer->signal(*full);
-        }
-        else{
-            buffer->leave();
         }
     }
 }

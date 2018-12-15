@@ -3,3 +3,12 @@ cmake-build-debug
 queue_test*
 prog
 result*
+.DS_Store
+monitors/.DS_Store
+monitors/CMakeCache.txt
+monitors/CMakeFiles/
+monitors/Makefile
+monitors/cmake_install.cmake
+monitors/include/.DS_Store
+monitors/monitor
+monitors/src/.DS_Store

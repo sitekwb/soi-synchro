@@ -29,12 +29,9 @@ void Consumer::action(){
                 <<c<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
         //signal(empty) = Hello! I emptied a few places!
+        buffer->leave();
         if( buffer->getSize() + jump == buffer->getCapacity() ){
-            buffer->leave();
             buffer->signal(*empty);
-        }
-        else{
-            buffer->leave();
         }
     }
 
