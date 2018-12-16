@@ -17,6 +17,10 @@
 #include <semaphore.h>
 
 #include <boost/interprocess/sync/interprocess_semaphore.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_condition.hpp>
+#include <boost/interprocess/sync/sharable_lock.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
 
 #endif
 
@@ -39,20 +43,18 @@ private:
 
 class Condition
 {
-  friend class Monitor;
 
 public:
-	Condition() : w( 0 ){
-        waitingCount = 0;
-	}
+	Condition(){}
 
 	void wait();
 
-	bool signal();
+	void signal();
 
 private:
-	Semaphore w;
-	int waitingCount;
+	boost::interprocess::interprocess_condition cond;
+	boost::interprocess::interprocess_mutex mutex;
+
 };
 
 
@@ -67,10 +69,9 @@ public:
 
 	void wait( Condition & cond );
 
-	bool signal( Condition & cond );
+	void signal( Condition & cond );
 
 
-private:
 	Semaphore s;
 };
 

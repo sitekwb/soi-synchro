@@ -8,7 +8,7 @@
 using namespace std;
 
 Buffer *buffer;
-Condition *empty, *full;
+Condition *full, *empty;
 Monitor *monitor;
 
 

@@ -42,9 +42,9 @@ int main (int argc, char **argv)
         full = segment.construct<Condition>("full")();
         monitor = segment.construct<Monitor>("Monitor")();
 
-        for(char i='a'; i<'a'+4; ++i){
-            buffer->add(i);
-        }
+        //for(char i='a'; i<'a'+4; ++i){
+          //  buffer->add(i);
+        //}
         //create child processes performing their actions
         for(int i=0; i<2; ++i){
             pid[i] = fork();

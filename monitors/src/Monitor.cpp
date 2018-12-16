@@ -21,19 +21,18 @@ void Semaphore::v()
 
 void Condition::wait()
 {
-	w.p();
+	sharable_lock<interprocess_mutex> lock(mutex);
+	std::cout<<"[C]"<<std::endl;
+	cond.wait(lock);
+	std::cout<<"[O]"<<std::endl;
 }
 
-bool Condition::signal()
+void Condition::signal()
 {
-	if( waitingCount )
-	{
-		-- waitingCount;
-		w.v();
-		return true;
-	}//if
-	else
-		return false;
+	std::cout<<"[N]"<<std::endl;
+	cond.notify_one();
+	std::cout<<"[ND]"<<std::endl;
+
 }
 
 
@@ -53,14 +52,14 @@ void Monitor::leave()
 
 void Monitor::wait( Condition & cond )
 {
-	++ cond.waitingCount;
 	leave();
 	cond.wait();
+	enter();
 }
 
-bool Monitor::signal( Condition & cond )
+void Monitor::signal( Condition & cond )
 {
-    return cond.signal();
+    cond.signal();
 }
 
 

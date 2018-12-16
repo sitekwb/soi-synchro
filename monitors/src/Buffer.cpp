@@ -7,15 +7,15 @@ using namespace std;
 
 char Buffer::pick() { //throws runtime_error
     char c;
-    cout<<"[Y1]"<<endl;
+    //cout<<"[Y1]"<<endl;
     if(buf.empty()){
         throw runtime_error("Empty queue");
     }
-    cout<<"[Y2]"<<endl;
+    //cout<<"[Y2]"<<endl;
     c = buf.front();
-    cout<<"[Y3]"<<endl;
+    //cout<<"[Y3]"<<endl;
     buf.pop();
-    cout<<"[Y4]"<<endl;
+    //cout<<"[Y4]"<<endl;
     return c;
 }
 void Buffer::add(char element){ //throws runttime_error
@@ -30,10 +30,14 @@ int Buffer::getSize(){
 string Buffer::getBuf(){
     string str;
     while( str.size() != buf.size() ){
-        char c = buf.front();
+        //cout<<"[Z1]"<<endl;
+        char c;
+        c = buf.front();
+        //cout<<"[Z2]"<<c<<endl;
         buf.pop();
         buf.push(c);
         str+=c;
+        //cout<<"[Z3]"<<str<<endl;
     }
     return str;
 }

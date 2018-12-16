@@ -22,6 +22,7 @@ void Producer::action(){
         sleep(sleepTime);
         //enter to monitor Buffer
         //cout<<functionName<<letterName<<" Entering to buffer."<<endl; TODO
+        cout<<functionName<<' '<<letterName;
         monitor->enter();
         //cout<<functionName<<letterName<<" Entered to buffer."<<endl; TODO
         //if too much elements => wait till is more EMPTY
@@ -30,6 +31,7 @@ void Producer::action(){
                 // I'll be waiting <= inform user
                 std::cout<<functionName<<letterName<<" waiting for "<<jump-i<<" places to produce"<<std::endl;
                 //wait
+                cout<<functionName<<' '<<letterName;
                 monitor->wait(*empty);
                 cout<<"[U]  "<<functionName<<' '<<letterName<<endl;
             }
@@ -40,9 +42,10 @@ void Producer::action(){
             std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' '  \
                 <<buffer->getBack()<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
-        if(!monitor->signal(*full)) {
-            monitor->leave();
-        }
+        cout<<functionName<<' '<<letterName;
+        monitor->leave();
+        cout<<functionName<<' '<<letterName;
+        monitor->signal(*full);
         //signal(full) = Hello! I emptied a few places, before there wasn't any!
     }
 }
