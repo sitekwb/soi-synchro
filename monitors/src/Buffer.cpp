@@ -6,11 +6,16 @@
 using namespace std;
 
 char Buffer::pick() { //throws runtime_error
+    char c;
+    cout<<"[Y1]"<<endl;
     if(buf.empty()){
         throw runtime_error("Empty queue");
     }
-    char c = buf.front();
+    cout<<"[Y2]"<<endl;
+    c = buf.front();
+    cout<<"[Y3]"<<endl;
     buf.pop();
+    cout<<"[Y4]"<<endl;
     return c;
 }
 void Buffer::add(char element){ //throws runttime_error

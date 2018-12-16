@@ -9,4 +9,14 @@ set(CMAKE_CXX_STANDARD 11)
 file(GLOB SOURCES "src/*.cpp")
 
 
-add_executable(monitor ${SOURCES})
+add_executable(monitor main.cpp ${SOURCES})
+
+add_executable(test test_main.cpp ${SOURCES})
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+
+add_executable(test_debug test_main.cpp ${SOURCES})
+add_executable(monitor_debug main.cpp ${SOURCES})
+
+

@@ -1,41 +1,20 @@
 #include "Monitor.hpp"
 
-Semaphore::Semaphore( int value )
-{
-#ifdef _WIN32
-sem = CreateSemaphore( NULL, value, 1, NULL );
-#else
- if( sem_init( & sem, 0, value ) != 0 )
-   throw "sem_init: failed";
-#endif
-}
-Semaphore::~Semaphore()
-{
-#ifdef _WIN32
-CloseHandle( sem );
-#else
-  sem_destroy( & sem );
-#endif
-}
+
+#include <iostream>//for a while TODO
+using namespace boost::interprocess;
+
+Semaphore::Semaphore( unsigned int value ) : sem(value){}
+Semaphore::~Semaphore() {}
 
 void Semaphore::p()
 {
-#ifdef _WIN32
-  WaitForSingleObject( sem, INFINITE );
-#else
- if( sem_wait( & sem ) != 0 )
-   throw "sem_wait: failed";
-#endif
+	sem.wait();
 }
 
 void Semaphore::v()
 {
-#ifdef _WIN32
-  ReleaseSemaphore( sem, 1, NULL );
-#else
- if( sem_post( & sem ) != 0 )
-   throw "sem_post: failed";
-#endif
+	sem.post();
 }
 
 
@@ -61,11 +40,14 @@ bool Condition::signal()
 
 void Monitor::enter()
 {
+	std::cout<<"[W]"<<std::endl;
 	s.p();
+	std::cout<<"[E]"<<std::endl;
 }
 
 void Monitor::leave()
 {
+    std::cout<<"[L]"<<std::endl;
 	s.v();
 }
 
@@ -76,10 +58,9 @@ void Monitor::wait( Condition & cond )
 	cond.wait();
 }
 
-void Monitor::signal( Condition & cond )
+bool Monitor::signal( Condition & cond )
 {
-	if( cond.signal() )
-		enter();
+    return cond.signal();
 }
 
 

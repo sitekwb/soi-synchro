@@ -16,41 +16,44 @@
 #include "Producer.hpp"
 #include "Consumer.hpp"
 
-extern Condition *full, *empty;
-extern Buffer *buffer;
+
+using namespace boost::interprocess;
 
 int main (int argc, char **argv)
 {
+
     int pid[4];
     Person *person[4];
     person[0] = new Consumer(1, 'A', (argc==4)?atoi(argv[2]):0);
-    person[1] = new Consumer(2, 'B', (argc==4)?atoi(argv[2]):0);
-    person[2] = new Producer(1, 'A', (argc==4)?atoi(argv[3]):0);
+    person[1] = new Producer(1, 'A', (argc==4)?atoi(argv[3]):0);
+    person[2] = new Consumer(2, 'B', (argc==4)?atoi(argv[2]):0);
     person[3] = new Producer(3, 'B', (argc==4)?atoi(argv[3]):0);
 
-    using namespace boost::interprocess;
 
-    shared_memory_object::remove("MySharedMemory");
+    shared_memory_object::remove("Memory");
     try{
         //allocate memory and buffer and monitors objects
         //shared_memory_object segment(create_only, "Memory", read_write);
 
-        managed_shared_memory segment(open_or_create, "Memory", BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition));
+        managed_shared_memory segment(create_only, "Memory", 100*(sizeof(Monitor) + BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition)));
 
         buffer = segment.construct<Buffer>("Buf")();
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
+        monitor = segment.construct<Monitor>("Monitor")();
 
-
+        for(char i='a'; i<'a'+4; ++i){
+            buffer->add(i);
+        }
         //create child processes performing their actions
-        for(int i=0; i<4; ++i){
+        for(int i=0; i<2; ++i){
             pid[i] = fork();
             if(pid[i] == 0){//I am child
                     person[i]->action();
             }
         }
         //sleep waiting for result of people work
-        sleep((argc>1)?atoi(argv[1]):30);
+        sleep((argc>1)?atoi(argv[1]):10);
     }
     catch(const std::runtime_error& re)
     {

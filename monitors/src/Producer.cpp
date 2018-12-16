@@ -5,8 +5,8 @@
 #include "Producer.hpp"
 
 
-extern Condition *full, *empty;
-extern Buffer *buffer;
+
+using namespace std;
 
 
 
@@ -21,14 +21,17 @@ void Producer::action(){
     while(true){
         sleep(sleepTime);
         //enter to monitor Buffer
-        buffer->enter();
+        //cout<<functionName<<letterName<<" Entering to buffer."<<endl; TODO
+        monitor->enter();
+        //cout<<functionName<<letterName<<" Entered to buffer."<<endl; TODO
         //if too much elements => wait till is more EMPTY
         for(int i=0; i < this->jump; ++i) {
             if (buffer->getSize() == buffer->getCapacity() - i) {
                 // I'll be waiting <= inform user
-                std::cout<<functionName<<letterName<<" waiting for "<<jump-i<<" places"<<std::endl;
+                std::cout<<functionName<<letterName<<" waiting for "<<jump-i<<" places to produce"<<std::endl;
                 //wait
-                buffer->wait(*empty);
+                monitor->wait(*empty);
+                cout<<"[U]  "<<functionName<<' '<<letterName<<endl;
             }
         }
         //add&inform user
@@ -37,10 +40,9 @@ void Producer::action(){
             std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' '  \
                 <<buffer->getBack()<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
-        buffer->leave();
-        //signal(empty) = Hello! I emptied a few places, before there wasn't any!
-        if( buffer->getSize() + jump == buffer->getCapacity() ){
-            buffer->signal(*full);
+        if(!monitor->signal(*full)) {
+            monitor->leave();
         }
+        //signal(full) = Hello! I emptied a few places, before there wasn't any!
     }
 }

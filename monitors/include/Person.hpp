@@ -16,8 +16,10 @@
 #define MIN_LETTERS_TO_CONSUME  3
 
 
-static Buffer *buffer;
-static Condition *empty, *full;
+extern Condition *full, *empty;
+extern Buffer *buffer;
+extern Monitor *monitor;
+
 
 
 

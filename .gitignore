@@ -11,4 +11,9 @@ monitors/Makefile
 monitors/cmake_install.cmake
 monitors/include/.DS_Store
 monitors/monitor
+monitors/debug
+monitors/monitor_debug
+monitors/monitors.cbp
+monitors/test
+monitors/test_debug
 monitors/src/.DS_Store

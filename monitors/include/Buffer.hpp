@@ -15,9 +15,9 @@
 
 
 
-class Buffer : public Monitor{
+class Buffer{
 public:
-
+    Buffer() {}
     char pick();
     void add(char element);
     int getSize();

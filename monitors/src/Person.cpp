@@ -7,6 +7,9 @@
 
 using namespace std;
 
+Buffer *buffer;
+Condition *empty, *full;
+Monitor *monitor;
 
 
 int Person::getJump(){

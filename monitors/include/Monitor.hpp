@@ -16,27 +16,25 @@
 #include <unistd.h>
 #include <semaphore.h>
 
+#include <boost/interprocess/sync/interprocess_semaphore.hpp>
+
 #endif
 
 class Semaphore
 {
 public:
 
-  Semaphore( int value );
-  ~Semaphore();
+  	Semaphore( unsigned int value );
+  	~Semaphore();
 
-  void p();
+  	void p();
+  	void v();
 
-  void v();
-  
 
 private:
 
-#ifdef _WIN32
-	HANDLE sem;
-#else
-	sem_t sem;
-#endif
+	boost::interprocess::interprocess_semaphore sem;
+
 };
 
 class Condition
@@ -69,7 +67,7 @@ public:
 
 	void wait( Condition & cond );
 
-	void signal( Condition & cond );
+	bool signal( Condition & cond );
 
 
 private:
