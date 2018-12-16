@@ -37,14 +37,15 @@ int main (int argc, char **argv)
 
         managed_shared_memory segment(create_only, "Memory", 100*(sizeof(Monitor) + BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition)));
 
-        buffer = segment.construct<Buffer>("Buf")();
+        std::queue<char> *queue = segment.construct<std::queue<char>>("Queue")();
+        buffer = segment.construct<Buffer>("Buf")(queue);
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
         monitor = segment.construct<Monitor>("Monitor")();
 
-        //for(char i='a'; i<'a'+4; ++i){
-          //  buffer->add(i);
-        //}
+        for(char i='a'; i<'a'+4; ++i){
+            buffer->add(i);
+        }
         //create child processes performing their actions
         for(int i=0; i<2; ++i){
             pid[i] = fork();

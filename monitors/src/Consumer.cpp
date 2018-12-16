@@ -35,8 +35,6 @@ void Consumer::action(){
         }
         //signal(empty) = If no one was waiting, switch off light
         cout<<functionName<<' '<<letterName;
-        monitor->leave();
-        cout<<functionName<<' '<<letterName;
         monitor->signal(*empty);
     }
 

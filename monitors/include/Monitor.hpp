@@ -45,15 +45,15 @@ class Condition
 {
 
 public:
-	Condition(){}
+	Condition() : sem(0), waitingCount(0){}
 
 	void wait();
 
-	void signal();
+	bool signal();
 
 private:
-	boost::interprocess::interprocess_condition cond;
-	boost::interprocess::interprocess_mutex mutex;
+	Semaphore sem;
+	int waitingCount;
 
 };
 

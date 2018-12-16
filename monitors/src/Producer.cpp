@@ -42,8 +42,7 @@ void Producer::action(){
             std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump<<' '  \
                 <<buffer->getBack()<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
-        cout<<functionName<<' '<<letterName;
-        monitor->leave();
+
         cout<<functionName<<' '<<letterName;
         monitor->signal(*full);
         //signal(full) = Hello! I emptied a few places, before there wasn't any!
