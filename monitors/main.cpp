@@ -37,20 +37,28 @@ int main (int argc, char **argv)
 
         managed_shared_memory segment(create_only, "Memory", 100*(sizeof(Monitor) + BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition)));
 
-        std::queue<char> *queue = segment.construct<std::queue<char>>("Queue")();
-        buffer = segment.construct<Buffer>("Buf")(queue);
+        buffer = segment.construct<Buffer>("Buf")();
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
         monitor = segment.construct<Monitor>("Monitor")();
 
-        for(char i='a'; i<'a'+4; ++i){
-            buffer->add(i);
-        }
+        //for(char i='a'; i<'a'+4; ++i){
+          //  buffer->add(i);
+        //}
         //create child processes performing their actions
-        for(int i=0; i<2; ++i){
+        for(int i=0; i<4; ++i){
             pid[i] = fork();
             if(pid[i] == 0){//I am child
-                    person[i]->action();
+                managed_shared_memory memory(open_only, "Memory");
+
+                buffer = memory.find<Buffer>("Buf").first;
+                empty = memory.find<Condition>("empty").first;
+                full = memory.find<Condition>("full").first;
+                monitor = memory.find<Monitor>("Monitor").first;
+                if(!(buffer && empty && full && monitor)){
+                    throw std::runtime_error("Pointer not found");
+                }
+                person[i]->action();
             }
         }
         //sleep waiting for result of people work
