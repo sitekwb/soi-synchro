@@ -19,7 +19,7 @@
 extern Condition *full, *empty;
 extern Buffer *buffer;
 extern Monitor *monitor;
-
+extern std::queue<char> *queue;
 
 
 

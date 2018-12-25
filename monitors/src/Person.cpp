@@ -5,12 +5,13 @@
 
 #include "Person.hpp"
 
-using namespace std;
 
 Buffer *buffer;
 Condition *full, *empty;
 Monitor *monitor;
+std::queue<char> *queue;
 
+using namespace std;
 
 int Person::getJump(){
     return jump;

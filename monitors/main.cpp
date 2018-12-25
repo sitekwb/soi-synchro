@@ -37,7 +37,7 @@ int main (int argc, char **argv)
 
         managed_shared_memory segment(create_only, "Memory", 100*(sizeof(Monitor) + BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition)));
 
-        buffer = segment.construct<Buffer>("Buf")();
+        queue = segment.construct<std::queue<char>>("Queue")();
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
         monitor = segment.construct<Monitor>("Monitor")();
@@ -51,13 +51,17 @@ int main (int argc, char **argv)
             if(pid[i] == 0){//I am child
                 managed_shared_memory memory(open_only, "Memory");
 
-                buffer = memory.find<Buffer>("Buf").first;
+                queue = memory.find<std::queue<char>>("Queue").first;
                 empty = memory.find<Condition>("empty").first;
                 full = memory.find<Condition>("full").first;
                 monitor = memory.find<Monitor>("Monitor").first;
-                if(!(buffer && empty && full && monitor)){
+
+                if(!(queue && empty && full && monitor)){
                     throw std::runtime_error("Pointer not found");
                 }
+
+                buffer = new Buffer(queue);//buffer is local, but uses shared queue
+
                 person[i]->action();
             }
         }

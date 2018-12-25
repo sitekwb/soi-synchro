@@ -17,7 +17,7 @@
 
 class Buffer{
 public:
-    Buffer(){}
+    Buffer(std::queue<char> *buf_) : buf(buf_){}
     char pick();
     void add(char element);
     int getSize();
@@ -26,7 +26,7 @@ public:
     char getBack();
 private:
     static const int capacity = BUF_NUM_ELEMENTS;
-    std::queue<char> buf;
+    std::queue<char> *buf;
 };
 
 #endif //T3_BUFFER_HPP
