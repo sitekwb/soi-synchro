@@ -9,7 +9,8 @@
 Buffer *buffer;
 Condition *full, *empty;
 Monitor *monitor;
-std::queue<char> *queue;
+char *tab;
+int *tabsize;
 
 using namespace std;
 

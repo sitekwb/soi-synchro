@@ -24,10 +24,10 @@ int main (int argc, char **argv)
 
     int pid[4];
     Person *person[4];
-    person[0] = new Consumer(1, 'A', (argc==4)?atoi(argv[2]):0);
-    person[1] = new Producer(1, 'A', (argc==4)?atoi(argv[3]):0);
-    person[2] = new Consumer(2, 'B', (argc==4)?atoi(argv[2]):0);
-    person[3] = new Producer(3, 'B', (argc==4)?atoi(argv[3]):0);
+    person[0] = new Consumer(1, 'A', (argc==4)?atoi(argv[3]):0);
+    person[1] = new Producer(1, 'A', (argc==4)?atoi(argv[2]):0);
+    person[2] = new Consumer(2, 'B', (argc==4)?atoi(argv[3]):0);
+    person[3] = new Producer(3, 'B', (argc==4)?atoi(argv[2]):0);
 
 
     shared_memory_object::remove("Memory");
@@ -37,11 +37,13 @@ int main (int argc, char **argv)
 
         managed_shared_memory segment(create_only, "Memory", 100*(sizeof(Monitor) + BUFFERS_NUM*sizeof(Buffer) + CONDITIONS_NUM*sizeof(Condition)));
 
-        queue = segment.construct<std::queue<char>>("Queue")();
+        tabsize = segment.construct<int>("tabsize")();
+        tab = segment.construct<char>("tab")[9]();
         empty = segment.construct<Condition>("empty")();
         full = segment.construct<Condition>("full")();
         monitor = segment.construct<Monitor>("Monitor")();
 
+        *tabsize = 0;
         //for(char i='a'; i<'a'+4; ++i){
           //  buffer->add(i);
         //}
@@ -51,16 +53,17 @@ int main (int argc, char **argv)
             if(pid[i] == 0){//I am child
                 managed_shared_memory memory(open_only, "Memory");
 
-                queue = memory.find<std::queue<char>>("Queue").first;
+                tabsize = memory.find<int>("tabsize").first;
+                tab = memory.find<char>("tab").first;
                 empty = memory.find<Condition>("empty").first;
                 full = memory.find<Condition>("full").first;
                 monitor = memory.find<Monitor>("Monitor").first;
 
-                if(!(queue && empty && full && monitor)){
+                if(!(tabsize && tab && empty && full && monitor)){
                     throw std::runtime_error("Pointer not found");
                 }
 
-                buffer = new Buffer(queue);//buffer is local, but uses shared queue
+                buffer = new Buffer(tab, *tabsize);//buffer is local, but uses shared queue
 
                 person[i]->action();
             }

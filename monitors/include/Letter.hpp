@@ -9,10 +9,10 @@
 
 struct Letter{
     char c;
+    Letter(char e) : c(e) {}
     char operator++();
     char operator++(int);
     char operator*();
-    void operator=(char nLetter);
 };
 
 

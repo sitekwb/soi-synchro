@@ -12,29 +12,23 @@ void Consumer::action(){
     while(true){
         sleep(sleepTime);
         //enter to monitor Buffer
-        cout<<functionName<<' '<<letterName;
         monitor->enter();
-        //cout<<functionName<<' '<<letterName<<" MONITOR"<<endl;
         //if too low number of elements => wait on full
         for(int i=0; i < this->jump+MIN_LETTERS_TO_CONSUME; ++i) {
             if (buffer->getSize() == i) {
-                std::cout<<functionName<<' '<<letterName<< \
-                " waiting for "<<jump+MIN_LETTERS_TO_CONSUME-i<<" places to consume"<<std::endl;
-                cout<<functionName<<' '<<letterName;
+                std::cout<<functionName<<' '<<letterName<<' '<<i<<'/'<<jump+MIN_LETTERS_TO_CONSUME<<" WAIT"<<std::endl;
+                i=0;
                 monitor->wait(*full);
-                cout<<"[U]  "<<functionName<<' '<<letterName<<endl;
             }
         }
         //pick&inform user
         for(int i=1; i <= this->jump; ++i){
-            cout<<"[X1]"<<endl;
             char c = buffer->pick();
-            cout<<"[X2]"<<endl;
             std::cout<<functionName<<' '<<letterName<<' '<<i<<"/"<<jump<<' ';
             cout<<c<<' '<<buffer->getSize()<<' '<<buffer->getBuf()<<std::endl;
         }
         //signal(empty) = If no one was waiting, switch off light
-        cout<<functionName<<' '<<letterName;
+        //cout<<functionName<<' '<<letterName;
         monitor->signal(*empty);
     }
 

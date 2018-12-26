@@ -5,39 +5,52 @@
 
 using namespace std;
 
+bool Buffer::isEmpty(){
+    return tabsize == 0;
+}
+
+bool Buffer::isFull(){
+    return tabsize == capacity;
+}
+
 char Buffer::pick() { //throws runtime_error
     char c;
-    cout<<"[Y1]"<<endl;
-    if(buf->empty()){
-        throw runtime_error("Empty queue");
+    if(isEmpty()){
+        throw std::runtime_error("Empty tab! Fatal error!");
     }
-    cout<<"[Y2]"<<buf->size()<<endl;
-    c = buf->front();
-    cout<<"[Y3]"<<endl;
-    buf->pop();
-    cout<<"[Y4]"<<getBuf()<<endl;
+    c = this->front();
+    this->pop();
     return c;
 }
 void Buffer::add(char element){ //throws runttime_error
-    if(buf->size() == capacity){
+    if(this->isFull()){
         throw runtime_error("Full queue");
     }
-    buf->push(element);
+    this->push(element);
+}
+void Buffer::pop(){
+    for(auto i = 1; i < tabsize; ++i){
+        tab[i-1] = tab[i];
+    }
+    --tabsize;
+}
+void Buffer::push(char element){
+    tab[tabsize++] = element;
 }
 int Buffer::getSize(){
-    return buf->size();
+    return tabsize;
+}
+char Buffer::front() {
+    return tab[0];
 }
 string Buffer::getBuf(){
     string str;
-    while( str.size() != buf->size() ){
-        //cout<<"[Z1]"<<endl;
+    while( str.size() != tabsize ){
         char c;
-        c = buf->front();
-        //cout<<"[Z2]"<<c<<endl;
-        buf->pop();
-        buf->push(c);
+        c = front();
+        this->pop();
+        this->push(c);
         str+=c;
-        //cout<<"[Z3]"<<str<<endl;
     }
     return str;
 }
@@ -45,5 +58,5 @@ int Buffer::getCapacity() const{
     return capacity;
 }
 char Buffer::getBack(){
-    return buf->back();
+    return tab[tabsize-1];
 }

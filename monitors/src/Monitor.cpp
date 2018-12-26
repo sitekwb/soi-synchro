@@ -28,7 +28,7 @@ void Condition::wait()
 bool Condition::signal()
 {
 	if(waitingCount) {
-		std::cout << "[N]" << std::endl;
+		//std::cout << "[N]" << std::endl;
 		--waitingCount;
 		sem.v();
 		return false;
@@ -41,14 +41,11 @@ bool Condition::signal()
 
 void Monitor::enter()
 {
-	std::cout<<"[W]"<<std::endl;
 	s.p();
-	std::cout<<"[E]"<<std::endl;
 }
 
 void Monitor::leave()
 {
-    std::cout<<"[L]"<<std::endl;
 	s.v();
 }
 

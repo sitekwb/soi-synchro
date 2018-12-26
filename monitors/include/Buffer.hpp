@@ -17,7 +17,9 @@
 
 class Buffer{
 public:
-    Buffer(std::queue<char> *buf_) : buf(buf_){}
+    Buffer(char *tab_, int &tabsize_) : tab(tab_), tabsize(tabsize_){}
+    bool isEmpty();
+    bool isFull();
     char pick();
     void add(char element);
     int getSize();
@@ -25,8 +27,12 @@ public:
     int getCapacity() const;
     char getBack();
 private:
+    void push(char);
+    void pop();
+    char front();
     static const int capacity = BUF_NUM_ELEMENTS;
-    std::queue<char> *buf;
+    char *tab;
+    int &tabsize;
 };
 
 #endif //T3_BUFFER_HPP
